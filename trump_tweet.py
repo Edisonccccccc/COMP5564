@@ -7,8 +7,8 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
-# 1. 定义纳斯达克7巨头股票代码
-MAGN7_TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA','QQQ']
+# 1. 定义美股权重股
+MAGN7_TICKERS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'JPM', 'QQQ','SPY']
 
 
 # 2. 获取真实股票数据
