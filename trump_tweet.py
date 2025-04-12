@@ -60,11 +60,21 @@ def generate_simulated_sentiment(dates):
 def analyze_sentiment_impact(start_date, end_date):
     stock_df = get_stock_data(MAGN7_TICKERS, start_date, end_date)
     dates = stock_df.index
-    tweet_sentiment = generate_simulated_sentiment(dates)
+    # tweet_sentiment = generate_simulated_sentiment(dates)
+    # tweet_df = pd.DataFrame({
+    #     'date': dates,
+    #     'tweet_sentiment': tweet_sentiment
+    # })
+    
+    # 使用真实情绪数据替代模拟情绪
+    sentiment_df = pd.read_csv("output/trump_sentiment_daily.csv", parse_dates=["date"])
+    sentiment_df.set_index("date", inplace=True)
+    aligned_sentiment = sentiment_df.reindex(dates).fillna(0)["sentiment_score"].values
     tweet_df = pd.DataFrame({
         'date': dates,
-        'tweet_sentiment': tweet_sentiment
+        'tweet_sentiment': aligned_sentiment
     })
+    
     merged_df = pd.merge(
         tweet_df,
         stock_df,
