@@ -5,8 +5,8 @@ import matplotlib
 matplotlib.use('TkAgg')
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, r2_score
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.models import Sequential # type: ignore
+from tensorflow.keras.layers import LSTM, Dense, Dropout # type: ignore
 import matplotlib.pyplot as plt
 
 # 1. 设置时间范围和股票代码
@@ -15,7 +15,7 @@ end_date = '2021-01-20'
 tickers = ['QQQ', 'SPY']  # 你可以在这里添加更多股票代码，例如 ['QQQ', 'SPY', 'AAPL', 'GOOGL']
 
 # 2. 读取10年期美国国债收益率数据
-treasury_data_path = r'D:\PolyU\Machine Learning\project\code\data\us_treasury_yields_daily.csv'
+treasury_data_path = r'/Users/apei./Other/VSCode/Project/COMP5564/data/us_treasury_yields_daily.csv'
 treasury_data = pd.read_csv(treasury_data_path)
 
 # 假设CSV文件中的日期列名为 'date'，10年期国债收益率列名为 'US10Y'
