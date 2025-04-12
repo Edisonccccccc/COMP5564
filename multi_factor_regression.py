@@ -3,8 +3,8 @@
 
 ✅ 输入：
 - data/stock_returns.csv：包含 MAGN7 股票的每日收益率，字段包括 date, AAPL, MSFT 等
-- data/us_treasury_yield_delta.csv：美债10年期收益率每日变动（US10Y 列）
-- output/trump_sentiment_daily.csv：每日 Trump 情绪得分（sentiment_score）
+- data/us_treasury_yields_daily.csv：美债收益率原始数据（包含 US10Y 等字段，每日绝对水平）
+- data/trump_sentiment_daily.csv：每日 Trump 情绪得分（sentiment_score）
 
 📤 输出：
 - 控制台输出每支股票的回归系数、R²、MSE
@@ -18,8 +18,8 @@ from sklearn.preprocessing import StandardScaler
 
 # 加载数据
 stock_df = pd.read_csv("data/stock_returns.csv", parse_dates=["date"]).set_index("date")
-yield_df = pd.read_csv("data/us_treasury_yield_delta.csv", parse_dates=["date"]).set_index("date")
-sentiment_df = pd.read_csv("output/trump_sentiment_daily.csv", parse_dates=["date"]).set_index("date")
+yield_df = pd.read_csv("data/us_treasury_yields_daily.csv", parse_dates=["date"]).set_index("date")
+sentiment_df = pd.read_csv("data/trump_sentiment_daily.csv", parse_dates=["date"]).set_index("date")
 
 # 合并所有数据
 merged_df = stock_df.join([yield_df["US10Y"], sentiment_df["sentiment_score"]], how="inner").dropna()
