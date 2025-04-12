@@ -1,8 +1,27 @@
+## 🕒 数据时间范围说明
+
+- **分析时间段**：2015-01-01 至 2021-01-08
+  - ✅ 2015-01-01：保留特朗普当选前一年的历史言论数据
+  - ✅ 2016-11-08：特朗普当选总统
+  - ✅ 2017-01-20：特朗普正式就任总统
+  - ✅ 2021-01-08：特朗普被永久封禁 Twitter，数据集终止
+
+## 📁 数据文件说明（data/）
+
+| 文件名                      | 描述                                                         |
+|---------------------------|--------------------------------------------------------------|
+| `realdonaldtrump.csv`     | Trump 官方账号推文原始数据（含文本、日期、转发、点赞等字段）       |
+| `trumptweets.csv`         | 补充 Trump 推文数据，结构与上者相同，用于数据合并提升覆盖度         |
+| `trump_sentiment_daily.csv` | 从上述推文中提取的每日平均情绪得分（VADER 分析，字段：date, sentiment_score）|
+| `stock_closes.csv`        | MAGN7 及指数（AAPL, MSFT, NVDA 等）的每日收盘价（用于 LSTM 等模型）     |
+| `stock_returns.csv`       | MAGN7 股票每日收益率（基于收盘价 pct_change 后计算）                |
+| `us_treasury_yields_daily.csv` | 美国国债（10Y 等）收益率原始数据（日频，来源于外部 CSV）              |
+
 ## 项目进展总结
 
 ### ✅ 已完成
 1. **数据准备**
-   - 获取 MAGN7（AAPL, MSFT, NVDA 等）股票日收益率（使用 yfinance）
+   - 获取 MAGN7（AAPL, MSFT, NVDA 等）股票日收益率（使用 yfinance，时间范围为 2015-01-01 至 2021-01-08）
    - 导入美国国债收益率 CSV 文件
    - 构造 Trump 情绪因子：
      - 前期使用模拟情绪（范围 [-1, 1]，3日滚动平均）
@@ -67,3 +86,4 @@
   - 将所有推文按日期聚合为平均情绪得分
 - **输出**：
   - `output/trump_sentiment_daily.csv`：包含字段 [date, sentiment_score] 的 CSV 文件，用于情绪建模
+

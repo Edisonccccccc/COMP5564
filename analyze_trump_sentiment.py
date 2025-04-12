@@ -25,6 +25,5 @@ df['sentiment_score'] = df['content'].apply(compute_sentiment)
 daily_sentiment = df.groupby('date')['sentiment_score'].mean().reset_index()
 
 # 输出为 CSV
-daily_sentiment.to_csv('output/trump_sentiment_daily.csv', index=False)
-
-print("✅ 情绪得分已生成并保存到 output/trump_sentiment_daily.csv")
+daily_sentiment.to_csv('data/trump_sentiment_daily.csv', index=False)
+print("✅ 情绪得分已生成并保存到 data/trump_sentiment_daily.csv")
