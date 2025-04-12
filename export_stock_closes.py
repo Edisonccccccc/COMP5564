@@ -13,8 +13,8 @@ import yfinance as yf
 import pandas as pd
 
 tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'JPM', 'QQQ', 'SPY']
-start_date = '1962-01-02'
-end_date = '2024-06-21'
+start_date = '2015-01-01'
+end_date = '2021-01-08'
 
 print("📥 正在下载股票收盘价数据...")
 data = yf.download(tickers, start=start_date, end=end_date, group_by='ticker', auto_adjust=True)

@@ -13,20 +13,25 @@ import yfinance as yf
 import pandas as pd
 
 tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'JPM', 'QQQ', 'SPY']
-start_date = '2017-01-20'
-end_date = '2021-01-20'
+start_date = '2015-01-01'
+end_date = '2021-01-08'
 
 print("📥 正在下载股票收盘价数据...")
 data = yf.download(tickers, start=start_date, end=end_date, group_by='ticker', auto_adjust=True)
 
-returns_df = pd.DataFrame()
-returns_df['date'] = data.index
+returns_df = pd.DataFrame(index=data.index)
 
 for ticker in tickers:
     if isinstance(data[ticker], pd.DataFrame):
-        returns_df[ticker] = data[ticker]['Close'].pct_change()
+        close_series = data[ticker]['Close']
+        returns_df[ticker] = close_series.pct_change()
 
-returns_df.dropna(how='all', subset=tickers, inplace=True)
+# 删除第一行（因 pct_change 后为 NaN）
+returns_df = returns_df.iloc[1:]
+
+# 重设索引并添加日期列
+returns_df.reset_index(inplace=True)
+returns_df.rename(columns={'Date': 'date'}, inplace=True)
 
 # 保存到 CSV
 returns_df.to_csv("data/stock_returns.csv", index=False)
