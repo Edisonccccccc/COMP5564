@@ -17,6 +17,8 @@
 | `stock_closes.csv`        | MAGN7 及指数（AAPL, MSFT, NVDA 等）的每日收盘价（用于 LSTM 等模型）     | 2015-01-02 ~ 2021-01-07 |
 | `stock_returns.csv`       | MAGN7 股票每日收益率（基于收盘价 pct_change 后计算）                | 2015-01-05 ~ 2021-01-07 |
 | `us_treasury_yields_daily.csv` | 美国国债（10Y 等）收益率原始数据（日频，来源于外部 CSV）              | 1962-01-02 ~ 2024-06-21 |
+| `sentiment_classified_tweets_2017_2021_batch.csv` | 经人工标注的 Trump 推文情绪分类数据（pos/neg/neu 三类）         | 2017-01-20 ~ 2021-01-08 |
+| `trump_sentiment_labeled_no_classification.csv`   | Trump 推文每日情绪得分（未分类标签，可能用于回归）             | 2017-01-20 ~ 2021-01-08 |
 
 ## 项目进展总结
 
@@ -87,4 +89,3 @@
   - 将所有推文按日期聚合为平均情绪得分
 - **输出**：
   - `output/trump_sentiment_daily.csv`：包含字段 [date, sentiment_score] 的 CSV 文件，用于情绪建模
-
