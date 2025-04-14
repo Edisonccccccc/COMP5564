@@ -1,3 +1,6 @@
+
+# COMP5564_MLAF_Project: F(Trump) = Market
+
 ## 🕒 数据时间范围说明
 
 - **分析时间段**：2015-01-01 至 2021-01-08
@@ -45,47 +48,113 @@
 
 ## 📦 各代码模块结构说明
 
-### 1. `trump_tweet.py`
-- **输入**：
-  - MAGN7 股票历史收盘价（通过 yfinance 获取）
-  - 模拟或真实的 Trump 推文每日情绪得分
-- **处理**：
-  - 对每支股票进行 OLS 回归：收益率 ~ 情绪得分
-  - 标准化情绪得分，输出回归系数、p 值、R²
-- **输出**：
-  - 分析结果表格
-  - 股票收益率与情绪得分双轴图
-  - 相关性热图
+### `src/preprocessing/` - 数据预处理模块
 
-### 2. `us_treasury_yields_daily.py`
+#### 1. `export_stock_closes.py`
 - **输入**：
-  - MAGN7 股票历史收益率（yfinance）
-  - 国债收益率 CSV（多个期限，日频）
+  - 股票代码列表（如 MAGN7）
+  - 时间区间（如 2015-01-01 ~ 2021-01-08）
 - **处理**：
-  - 计算美债收益率的每日变动率
-  - 对每支股票进行 OLS 回归：收益率 ~ 国债变动率
+  - 使用 yfinance 抓取每日收盘价数据
 - **输出**：
-  - 回归结果表格（系数、p 值、R²）
-  - 股票收益率 vs 国债变动图
-  - 国债与股票的相关性热图
+  - `data/raw/stock_closes.csv`
 
-### 3. `train_LSTM.py`
+#### 2. `export_stock_returns.py`
 - **输入**：
-  - 某只股票的历史收盘价、成交量、10Y 国债收益率
+  - `stock_closes.csv`
 - **处理**：
-  - 构建 `[Close, Volume, US10Y]` 特征序列，标准化
-  - 使用 LSTM 进行滑窗预测（如60日窗口）
+  - 对收盘价做 `pct_change()` 并对齐处理
 - **输出**：
-  - 模型在训练/测试集的预测 vs 实际图
-  - MSE、R² 等回归评估指标
+  - `data/raw/stock_returns.csv`
 
-### 4. `analyze_trump_sentiment.py`
+---
+
+### `src/regression/` - 探因/解释性建模模块
+
+#### 1. `analyze_trump_sentiment.py`
 - **输入**：
-  - `data/realdonaldtrump.csv`：Trump 推文文本（含字段 content, date 等）
-  - `data/trumptweets.csv`：另一份 Trump 推文数据（相同结构）
+  - `kaggle_realdonaldtrump.csv`, `kaggle_trumptweets.csv`
 - **处理**：
-  - 合并两份数据，保留日期和内容
-  - 使用 VADER 工具对每条 tweet 文本打情绪分（compound，范围 -1 ~ 1）
-  - 将所有推文按日期聚合为平均情绪得分
+  - 合并、去重、按日期聚合情绪得分（VADER）
 - **输出**：
-  - `output/trump_sentiment_daily.csv`：包含字段 [date, sentiment_score] 的 CSV 文件，用于情绪建模
+  - `data/processed/trump_sentiment_daily.csv`
+
+#### 3. `us_treasury_yields_daily.py`
+- **输入**：
+  - 股票每日收益率
+  - 美债收益率（us_treasury_yields_daily.csv）
+- **处理**：
+  - 美债收益率变动率计算
+  - OLS 回归（收益率 ~ 美债变动率）
+- **输出**：
+  - 回归结果表格
+  - 对应图表与热图
+
+#### 4. `trump_tweet.py`
+- **输入**：
+  - MAGN7 股票历史收益率
+  - Trump 每日情绪得分
+- **处理**：
+  - 对每支股票做 OLS 回归（收益率 ~ 情绪得分）
+- **输出**：
+  - 回归系数、p 值、R² 表格
+  - 情绪-股价双轴图与热图
+
+---
+
+### `src/prediction/` - 时间序列预测模块
+
+#### 1. `train_VIX.py`
+- **输入**：
+  - `vix_daily.csv`：VIX 恐慌指数（字段含日期和 close）
+  - `yfinance` 拉取的股票历史收盘价与成交量（如 QQQ, SPY）
+- **处理**：
+  - 合并 VIX 与股票数据，标准化后构造滑动窗口序列
+  - 使用 2 層 LSTM 进行收盘价预测
+  - 训练集与测试集分开计算 MSE 与 R²
+- **输出**：
+  - 训练与测试集的预测曲线图
+  - 控制台输出每只股票的 MSE 与 R²
+
+#### 2. `train_contrast.py`
+- **输入**：
+  - `yfinance` 拉取的 QQQ 与 SPY 的历史收盘价与成交量（Close, Volume）
+- **处理**：
+  - 为每支股票构建特征（自身的 Close + Volume），标准化后构造滑动窗口序列
+  - 构建双层 LSTM 模型进行收盘价预测
+  - 对每支股票分别训练并输出训练/测试集的预测曲线图
+- **输出**：
+  - 每支股票的预测可视化图
+  - 控制台输出训练/测试集的 MSE 与 R²
+
+#### 3. `train_treasury_yields.csv.py`
+- **输入**：
+  - 收盘价、国债收益率
+- **处理**：
+  - 使用 LSTM 进行时间序列预测
+- **输出**：
+  - 预测 vs 实际图，误差指标等
+
+#### 4. `VIX.py`
+- **输入**：
+  - `vix_daily.csv`：VIX 恐慌指数每日变化率
+  - `yfinance` 拉取的 MAGN7 权重股收盘价（按日计算收益率）
+- **处理**：
+  - 计算 VIX 日变化率并标准化
+  - 构建回归模型：各股票收益率 ~ VIX 日变化率
+  - 输出回归系数、P 值和 R²
+  - 绘制每支股票收益率与 VIX 的双轴图 + 相关性热图
+- **输出**：
+  - 控制台输出每支股票的回归结果表
+  - 所有股票回归图与 VIX 联动可视化
+
+#### 2. `multi_factor_regression.py`
+- **输入**：
+  - `stock_returns.csv`：MAGN7 股票的每日收益率（字段包括 AAPL, MSFT 等）
+  - `us_treasury_yields_daily.csv`：美债收益率（每日 US10Y）
+  - `trump_sentiment_daily.csv`：每日 Trump 情绪得分
+- **处理**：
+  - 合并数据后标准化 US10Y 与情绪得分
+  - 对每支股票构建线性回归模型（收益率 ~ 国债 + 情绪）
+- **输出**：
+  - 控制台打印每支股票的回归系数、R² 和 MSE
