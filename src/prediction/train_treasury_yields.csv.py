@@ -10,12 +10,12 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout # type: ignore
 import matplotlib.pyplot as plt
 
 # 1. 设置时间范围和股票代码
-start_date = '2017-01-20'
-end_date = '2021-01-20'
+start_date = '2016-11-08'
+end_date = '2020-06-17'
 tickers = ['QQQ', 'SPY']  # 你可以在这里添加更多股票代码，例如 ['QQQ', 'SPY', 'AAPL', 'GOOGL']
 
 # 2. 读取10年期美国国债收益率数据
-treasury_data_path = r'D:\PolyU\Machine Learning\project\code\data\us_treasury_yields_daily.csv'
+treasury_data_path = r'D:\PolyU\Machine Learning\project\code\data\raw\us_treasury_yields_daily.csv'
 treasury_data = pd.read_csv(treasury_data_path)
 
 # 假设CSV文件中的日期列名为 'date'，10年期国债收益率列名为 'US10Y'
@@ -38,7 +38,7 @@ data = stock_data.join(treasury_data[['US10Y']], how='inner')
 
 # 5. 数据预处理
 # 填充缺失值（如果有）
-data.fillna(method='ffill', inplace=True)
+data.fillna(0, inplace=True)
 
 
 # 6. 定义函数：为每个股票训练和预测
